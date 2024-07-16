@@ -28,19 +28,19 @@ module.exports = {
           .setDescription('Optional password required to connect to the server')
           .setRequired(false)),
       async execute(interaction) {
-        serverAddress = interaction.options.getString('server-address', false) ?? null;
+        serverAddress = interaction.options.getString('server-address', false) ?? null; //todo write to temp data?
         port = interaction.options.getNumber('port', false) ?? null;
         slotName = interaction.options.getString('slot-name', false) ?? null;
         password = interaction.options.getString('password', false) ?? null;
 
         if (serverAddress === null) {
-          serverAddress = config.serverAddress ?? "127.0.0.1";    
+          serverAddress = config.serverAddress ?? '127.0.0.1';    
         }
         if (port === null) {
           port = Number(config.port) ?? 12345;
         }
         if (slotName === null) {
-          slotName = config.slotName ?? "no name";
+          slotName = config.slotName ?? 'no name';
         }
         if (password === null) {
           password = config.password ?? null;
@@ -49,7 +49,7 @@ module.exports = {
         if (interaction.client.tempData.apInterfaces.has(interaction.channel.id)) {
           return interaction.reply({
             content: 'An Archipelago game is already being monitored in this channel ' +
-              'and must be disconnected before a new game can be monitored.',
+              'and must be disconnected or cleared before a new game can be monitored.',
             ephemeral: true,
           });
         }
@@ -75,21 +75,21 @@ module.exports = {
             // Until then, the following will run forever.
 
             // Make this run until not longer connected to the AP server.
-	          while (APInterface.APClient.status === 'Connected') {	
+            while (APInterface.APClient.status === 'Connected') {
               //console.log("Still connected to server");
               await new Promise((resolve) => (setTimeout(resolve, 5000)));
-		        }
+            }
 
             await interaction.reply({
-		          content: `Disconnected from AP server at ${serverAddress}.`,
-		          ephemeral: false,
-		        });
+              content: `Disconnected from AP server at ${serverAddress}.`,
+              ephemeral: false,
+            });
 
             return setTimeout(() => {
-              console.log("Lost connection with AP server.");
+              console.log('Lost connection with AP server.');
               if (interaction.client.tempData.apInterfaces.has(interaction.channel.id)) {
                 interaction.client.tempData.apInterfaces.get(interaction.channel.id).disconnect();
-                interaction.client.tempData.apInterfaces.delete(interaction.channel.id);
+                // interaction.client.tempData.apInterfaces.delete(interaction.channel.id); //do not delete data
               }
             }, 5000);
           }
@@ -122,6 +122,7 @@ module.exports = {
         return interaction.reply('Disconnected from Archipelago game.');
       },
     },
+    // {}, todo: add ap-reset
     {
       commandBuilder: new SlashCommandBuilder()
         .setName('ap-set-alias')
