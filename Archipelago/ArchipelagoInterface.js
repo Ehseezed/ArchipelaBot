@@ -23,7 +23,7 @@ class ArchipelagoInterface {
     this.showItems = false;
     this.showProgression = true;
     this.showTraps = true;
-    this.showChat = true;
+    this.showChat = false;
 
     const connectionInfo = {
       hostname: host,
