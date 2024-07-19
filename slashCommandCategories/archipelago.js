@@ -1,6 +1,6 @@
 const ArchipelagoInterface = require('../Archipelago/ArchipelagoInterface');
 const config = require('../config.json');
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, PermissionsBitField} = require('discord.js');
 const { AsciiTable3, AlignmentEnum } = require('ascii-table3');
 
 module.exports = {
@@ -116,10 +116,27 @@ module.exports = {
     },
     {
       commandBuilder: new SlashCommandBuilder()
+        .setName('log-info')
+        .setDescription('print information on the guild ID and Role IDs for programming purposes')
+        .setDMPermission(false),
+      async execute(interaction) {
+        console.log(interaction.member._roles);
+        console.log(interaction.member.guild.id);
+        interaction.reply('Logged');
+      },
+    },
+    {
+      commandBuilder: new SlashCommandBuilder()
         .setName('ap-disconnect')
         .setDescription('Stop monitoring an Archipelago game in the current text channel')
         .setDMPermission(false),
       async execute(interaction) {
+        if (interaction.member.guild.id === '1217323363488366602' &&
+            !(interaction.member._roles.includes('1217323363488366602') ||
+            interaction.member._roles.includes('1217340503918510181') ||
+            interaction.member._roles.includes('1217340330790355014'))) {
+          return interaction.reply('You do not');
+        }
         // Notify the user if there is no game being monitored in the current text channel
         if (!interaction.client.tempData.apInterfaces.has(interaction.channel.id)) {
           return interaction.reply({
